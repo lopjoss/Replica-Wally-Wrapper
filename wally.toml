@@ -1,0 +1,16 @@
+[package]
+name = "lopjoss/replica-wrapper"
+description = "A Wally wrapper for Replica with full type exports and separate server and client entry points"
+version = "1.0.0"
+license = "MIT"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+include = [
+    "wally.toml",
+    "default.project.json",
+    "src",
+    "src/**"
+]
+exclude = ["**"]
+
+[dependencies]
