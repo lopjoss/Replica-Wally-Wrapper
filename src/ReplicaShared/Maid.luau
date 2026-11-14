@@ -146,7 +146,7 @@ function Maid.New(key: any)
 	
 end
 
-function Maid:IsActive()
+function Maid:IsActive(): boolean
 	return not self.is_cleaned
 end
 
