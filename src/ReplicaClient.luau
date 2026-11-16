@@ -156,7 +156,7 @@ export type Replica = {
 	OnClientEvent: {Connect: (self: any, listener: (...any) -> ()) -> ({Disconnect: (self: any) -> ()})},
 	Maid: typeof(Maid),
 
-	OnSet: (self: any, path: {}, listener: () -> ()) -> (Signal.Connection),
+	OnSet: (self: any, path: {}, listener: (value : any, oldValue : any) -> ()) -> (Signal.Connection),
 	OnWrite: (self: any, function_name: string, listener: (...any) -> ()) -> (Signal.Connection),
 	OnChange: (self: any, listener: (action: "Set" | "SetValues" | "TableInsert" | "TableRemove", path: {any}, param1: any, param2: any?) -> ()) -> (Signal.Connection),
 	GetChild: (self: any, token: string) -> (Replica?),
