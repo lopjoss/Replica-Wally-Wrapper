@@ -1,17 +1,20 @@
-local function serverReplicaType()
-    local ReplicaServer = require(script.ReplicaServer)
+local signal = require(script.ReplicaShared.Signal)
 
-    return nil :: ReplicaServer.Replica
+local function serverReplicaType()
+    local replicaServer = require(script.ReplicaServer)
+
+    return nil :: replicaServer.Replica
 end
 
 local function clientReplicaType()
-    local ReplicaClient = require(script.ReplicaClient)
+    local replicaClient = require(script.ReplicaClient)
 
-    return nil :: ReplicaClient.Replica
+    return nil :: replicaClient.Replica
 end
 
 export type replicaServer = typeof(serverReplicaType())
 export type replicaClient = typeof(clientReplicaType())
+export type replicaConnection = signal.Connection
 
 return {
     server = function()
