@@ -218,7 +218,7 @@ export type Replica = {
 	OnServerEvent: {Connect: (self: any, listener: (Player, ...any) -> ()) -> ({Disconnect: (self: any) -> ()})},
 	Maid: typeof(Maid),
 
-	Set: (self: any, path: {string}, value: any) -> (),
+	Set: (self: any, path: {string}, value: any, ...any) -> (),
 	SetValues: (self: any, path: {string}, values: {[string]: any}) -> (),
 	TableInsert: (self: any, path: {string}, value: any, index: number?) -> (number),
 	TableRemove: (self: any, path: {string}, index: number) -> (any),
@@ -336,7 +336,7 @@ function Replica.Test()
 	}
 end
 
-function Replica:Set(path: {string}, value: any)
+function Replica:Set(path: {string}, value: any, ...)
 	
 	-- Apply local change:
 	
@@ -353,11 +353,11 @@ function Replica:Set(path: {string}, value: any)
 		if self.replication ~= nil then
 			if self.replication[REPLICATION_ALL] == true then
 				for player in pairs(ReadyPlayers) do
-					RemoteSet:FireClient(player, self_id, path, value)
+					RemoteSet:FireClient(player, self_id, path, value, ...)
 				end
 			else
 				for player in pairs(self.replication) do
-					RemoteSet:FireClient(player, self_id, path, value)
+					RemoteSet:FireClient(player, self_id, path, value, ...)
 				end
 			end
 		end

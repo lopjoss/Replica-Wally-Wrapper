@@ -156,9 +156,9 @@ export type Replica = {
 	OnClientEvent: {Connect: (self: any, listener: (...any) -> ()) -> ({Disconnect: (self: any) -> ()})},
 	Maid: typeof(Maid),
 
-	OnSet: (self: any, path: {}, listener: (value : any, oldValue : any) -> ()) -> (Signal.Connection),
+	OnSet: (self: any, path: {}, listener: (value : any, oldValue : any, ...any) -> ()) -> (Signal.Connection),
 	OnWrite: (self: any, function_name: string, listener: (...any) -> ()) -> (Signal.Connection),
-	OnChange: (self: any, listener: (action: "Set" | "SetValues" | "TableInsert" | "TableRemove", path: {any}, param1: any, param2: any?) -> ()) -> (Signal.Connection),
+	OnChange: (self: any, listener: (action: "Set" | "SetValues" | "TableInsert" | "TableRemove", path: {any}, param1: any, param2: any?, ...any) -> ()) -> (Signal.Connection),
 	GetChild: (self: any, token: string) -> (Replica?),
 	FireServer: (self: any, ...any) -> (),
 	UFireServer: (self: any, ...any) -> (),
@@ -313,7 +313,7 @@ function Replica.Test()
 	}
 end
 
-function Replica:OnSet(path: {}, listener: () -> ()): Signal.Connection
+function Replica:OnSet(path: {}, listener: (value : any, oldValue : any, ...any) -> ()): Signal.Connection
 	local path_key = table.concat(path, ".")
 	local listeners = self.set_listeners[path_key]
 	if listeners == nil then
@@ -334,7 +334,7 @@ function Replica:OnWrite(function_name: string, listener: (...any) -> ()): Signa
 	return listeners:Connect(listener)
 end
 
-function Replica:OnChange(listener: (action: "Set" | "SetValues" | "TableInsert" | "TableRemove", path: {any}, param1: any, param2: any?) -> ()): Signal.Connection
+function Replica:OnChange(listener: (action: "Set" | "SetValues" | "TableInsert" | "TableRemove", path: {any}, param1: any, param2: any?, ...any) -> ()): Signal.Connection
 	return self.changed_listeners:Connect(listener)
 end
 
@@ -372,7 +372,7 @@ function Replica:IsActive(): boolean
 	return self.Maid:IsActive()
 end
 
-function Replica:Set(path: {string}, value: any)
+function Replica:Set(path: {string}, value: any, ...)
 	
 	if ReplicationFlag ~= true then
 		error(`[{script.Name}]: "Set()" can't be called outside of WriteLibs client-side`)
@@ -393,10 +393,10 @@ function Replica:Set(path: {string}, value: any)
 	if next(self.set_listeners) ~= nil then
 		local listeners = self.set_listeners[table.concat(path, ".")]
 		if listeners ~= nil then
-			listeners:Fire(value, old_value)
+			listeners:Fire(value, old_value, ...)
 		end
 	end
-	self.changed_listeners:Fire("Set", path, value, old_value)
+	self.changed_listeners:Fire("Set", path, value, old_value, ...)
 	
 end
 
@@ -715,10 +715,10 @@ RemoteRequestData.OnClientEvent:Connect(function()
 	
 end)
 
-RemoteSet.OnClientEvent:Connect(function(id: number, path: {}, value: any)
+RemoteSet.OnClientEvent:Connect(function(id: number, path: {}, value: any, ...)
 	local replica = GetInternalReplica(id)
 	ReplicationFlag = true
-	local success, msg = pcall(replica.Set, replica, path, value)
+	local success, msg = pcall(replica.Set, replica, path, value, ...)
 	ReplicationFlag = false
 	if success ~= true then
 		error(`[{script.Name}]: Error while updating replica:\n{replica:Identify()}\n` .. msg)
